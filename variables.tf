@@ -108,6 +108,3 @@ variable "aws_secret_key" {
   type = string
 }
 
-variable "aws_region" {
-  default = "ap-south-1"
-}
