@@ -16,16 +16,19 @@ variable "cluster_version" {
 variable "public_subnet_ids" {
   type        = list(string)
   description = "List of public subnet IDs for the EKS cluster"
+  default     = [] 
 }
 
 variable "private_subnet_ids" {
   type        = list(string)
   description = "List of private subnet IDs for worker nodes"
+  default     = [] 
 }
 
 variable "vpc_id" {
   type        = string
   description = "VPC ID where the cluster will be deployed"
+  default     = "" # Mark as optional
 }
 
 variable "cluster_tags" {
