@@ -1,5 +1,4 @@
-### EKS Cluster role
-
+### EKS Cluster Role
 resource "aws_iam_role" "eks_cluster_role" {
   name = "${var.cluster_name}-cluster-role"
 
@@ -15,24 +14,19 @@ resource "aws_iam_role" "eks_cluster_role" {
   })
 }
 
-## EKS CLUSTER ROLE POLICY
-
 resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.eks_cluster_role.name
 }
 
-
-### EKS CLUSTER RESOUREC MOUDLE
-
+### EKS Cluster
 resource "aws_eks_cluster" "main" {
   name     = var.cluster_name
   role_arn = aws_iam_role.eks_cluster_role.arn
-  
-  version  = var.cluster_version  # Ensure this line is present
-  
+  version  = var.cluster_version
+
   vpc_config {
-    subnet_ids = concat(var.public_subnet_ids, var.private_subnet_ids)
+    subnet_ids              = concat(var.public_subnet_ids, var.private_subnet_ids)
     endpoint_private_access = true
     endpoint_public_access  = true
   }
@@ -42,9 +36,7 @@ resource "aws_eks_cluster" "main" {
   depends_on = [aws_iam_role_policy_attachment.eks_cluster_policy]
 }
 
-
-### EKS node group policy
-
+### Node Group IAM Role
 resource "aws_iam_role" "eks_node_group_role" {
   name = "${var.cluster_name}-node-group-role"
 
@@ -75,44 +67,95 @@ resource "aws_iam_role_policy_attachment" "eks_container_registry_policy" {
   role       = aws_iam_role.eks_node_group_role.name
 }
 
+### Security Group for Node Group
+resource "aws_security_group" "node_group_sg" {
+  name_prefix = "${var.cluster_name}-node-group"
+  vpc_id      = var.vpc_id
 
-## EKS node group launch template
-resource "aws_launch_template" "eks_node_group" {
-  name_prefix   = "${var.cluster_name}-node-group-"
-  image_id      = var.ami_id
-  instance_type = var.node_group_instance_types[0]
+  ingress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    self      = true
+  }
 
-  lifecycle {
-    create_before_destroy = true # This ensures that a replacement resource is created before the existing resource is destroyed.
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.cluster_name}-node-group-sg"
+    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
   }
 }
 
+### Launch Template
+resource "aws_launch_template" "eks_node_group" {
+  name_prefix   = "${var.cluster_name}-node-group-"
+  instance_type = var.node_group_instance_types[0]
 
-## EKS node group node module
+  user_data = base64encode(<<-EOF
+    #!/bin/bash
+    /etc/eks/bootstrap.sh ${var.cluster_name}
+  EOF
+  )
 
+  network_interfaces {
+    associate_public_ip_address = false
+    security_groups = [aws_security_group.node_group_sg.id]
+  }
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name = "${var.cluster_name}-node"
+    }
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+### EKS Node Group
 resource "aws_eks_node_group" "main" {
   cluster_name    = aws_eks_cluster.main.name
   node_group_name = var.node_group_name
   node_role_arn   = aws_iam_role.eks_node_group_role.arn
   subnet_ids      = var.private_subnet_ids
 
+  ami_type       = "AL2_x86_64"
+  capacity_type  = "ON_DEMAND"
+  disk_size      = 20
+
   scaling_config {
     desired_size = var.node_group_desired_size
     max_size     = var.node_group_max_size
     min_size     = var.node_group_min_size
   }
+
   launch_template {
     id      = aws_launch_template.eks_node_group.id
     version = "$Latest"
   }
 
-  tags = var.node_group_tags
-
-#   instance_types = var.node_group_instance_types
+  tags = merge(
+    var.node_group_tags,
+    {
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    }
+  )
 
   depends_on = [
     aws_iam_role_policy_attachment.eks_worker_node_policy,
     aws_iam_role_policy_attachment.eks_cni_policy,
     aws_iam_role_policy_attachment.eks_container_registry_policy,
   ]
+
+  update_config {
+    max_unavailable = 1
+  }
 }

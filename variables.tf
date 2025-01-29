@@ -4,76 +4,65 @@ variable "aws_region" {
 }
 
 variable "cluster_name" {
+  type        = string
   description = "Name of the EKS cluster"
-  type        = string
-}
-
-variable "vpc_id" {
-  description = "ID of the VPC"
-  type        = string
-}
-
-# variable "subnet_ids" {
-#   description = "List of subnet IDs for the EKS cluster"
-#   type        = list(string)
-# }
-
-variable "public_subnet_ids" {
-  description = "List of public subnet IDs"
-  type        = list(string)
-}
-
-variable "private_subnet_ids" {
-  description = "List of private subnet IDs"
-  type        = list(string)
-}
-
-variable "node_group_name" {
-  description = "Name of the EKS node group"
-  type        = string
-}
-
-variable "node_group_instance_types" {
-  description = "List of instance types for the EKS node group"
-  type        = list(string)
-}
-
-variable "node_group_desired_size" {
-  description = "Desired number of worker nodes"
-  type        = number
-}
-
-variable "node_group_min_size" {
-  description = "Minimum number of worker nodes"
-  type        = number
-}
-
-variable "node_group_max_size" {
-  description = "Maximum number of worker nodes"
-  type        = number
 }
 
 variable "cluster_version" {
-  description = "The desired Kubernetes version for your EKS cluster."
   type        = string
- # default     = "1.26"
+  description = "Kubernetes version for the EKS cluster"
+}
+
+variable "public_subnet_ids" {
+  type        = list(string)
+  description = "List of public subnet IDs for the EKS cluster"
+}
+
+variable "private_subnet_ids" {
+  type        = list(string)
+  description = "List of private subnet IDs for worker nodes"
+}
+
+variable "vpc_id" {
+  type        = string
+  description = "VPC ID where the cluster will be deployed"
 }
 
 variable "cluster_tags" {
-  description = "A map of tags to assign to the EKS cluster."
   type        = map(string)
+  description = "Additional tags for the EKS cluster"
   default     = {}
+}
+
+variable "node_group_name" {
+  type        = string
+  description = "Name of the EKS node group"
+}
+
+variable "node_group_instance_types" {
+  type        = list(string)
+  description = "List of instance types for the node group"
+}
+
+variable "node_group_desired_size" {
+  type        = number
+  description = "Desired number of worker nodes"
+}
+
+variable "node_group_max_size" {
+  type        = number
+  description = "Maximum number of worker nodes"
+}
+
+variable "node_group_min_size" {
+  type        = number
+  description = "Minimum number of worker nodes"
 }
 
 variable "node_group_tags" {
-  description = "A map of tags to assign to the EKS node groups."
   type        = map(string)
+  description = "Additional tags for the node group"
   default     = {}
-}
-
-variable "ami_id" {
-  description = "The AMI ID to use for the EC2 instances in the EKS node group."
-  type        = string
 }
 
 variable "enable_vpc_cni" {
