@@ -13,20 +13,20 @@ variable "cluster_version" {
   description = "Kubernetes version for the EKS cluster"
 }
 
-variable "public_subnet_ids" {
-  type        = list(string)
-  description = "List of public subnet IDs for the EKS cluster"
-}
+# variable "public_subnet_ids" {
+#   type        = list(string)
+#   description = "List of public subnet IDs for the EKS cluster"
+# }
 
-variable "private_subnet_ids" {
-  type        = list(string)
-  description = "List of private subnet IDs for worker nodes"
-}
+# variable "private_subnet_ids" {
+#   type        = list(string)
+#   description = "List of private subnet IDs for worker nodes"
+# }
 
-variable "vpc_id" {
-  type        = string
-  description = "VPC ID where the cluster will be deployed"
-}
+# variable "vpc_id" {
+#   type        = string
+#   description = "VPC ID where the cluster will be deployed"
+# }
 
 variable "cluster_tags" {
   type        = map(string)
