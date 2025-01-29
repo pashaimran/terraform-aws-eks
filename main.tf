@@ -108,6 +108,15 @@ resource "aws_launch_template" "eks_node_group" {
     security_groups = [aws_security_group.node_group_sg.id]
   }
 
+  block_device_mappings {
+    device_name = "/dev/xvda" # Default device name for Amazon Linux 2
+
+    ebs {
+      volume_size = 20 # Specify the disk size here
+      volume_type = "gp2" # General Purpose SSD
+      delete_on_termination = true
+    }
+  }
   tag_specifications {
     resource_type = "instance"
     tags = {
@@ -129,7 +138,6 @@ resource "aws_eks_node_group" "main" {
 
   ami_type       = "AL2_x86_64"
   capacity_type  = "ON_DEMAND"
-  disk_size      = 20
 
   scaling_config {
     desired_size = var.node_group_desired_size
