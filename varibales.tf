@@ -69,10 +69,10 @@ variable "private_subnet_ids" {
   type        = list(string)
 }
 
-variable "node_group_name" {
-  description = "Name of the EKS node group"
-  type        = string
-}
+# variable "node_group_name" {
+#   description = "Name of the EKS node group"
+#   type        = string
+# }
 
 variable "instance_types" {
   description = "List of instance types for the EKS node group"
