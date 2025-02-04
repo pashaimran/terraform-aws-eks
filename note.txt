@@ -1,0 +1,24 @@
+# OIDC associate, copy this oidc id after cluster creation and paste
+
+resource "aws_iam_openid_connect_provider" "eks" {
+    url             = "https://oidc.eks.${var.aws_region}.amazonaws.com/id/https://oidc.eks.ap-south-1.amazonaws.com/id/74C1C1F094718D8D691A308516446521"
+    client_id_list  = ["sts.amazonaws.com"]
+    thumbprint_list = ["9e99a48a9960b14926bb7f3b02e22da0afd60e22"] # Default EKS thumbprint
+  }
+
+# use this command to check oidc association
+
+$ aws iam list-open-id-connect-providers
+
+output:
+
+{
+    "OpenIDConnectProviderList": [
+        {
+            "Arn": "arn:aws:iam::264278751395:oidc-provider/oidc.eks.ap-south-1.amazonaws.com/id/https://oidc.eks.ap-south-1.amazonaws.com/id/74C1C1F094718D8D691A308516446521"
+        }
+    ]
+}
+
+# With the OIDC provider associated, you can create IAM roles for service accounts (IRSA). Here's how:
+

@@ -1,14 +1,9 @@
-# provider.tf
-provider "aws" {
-  region = var.aws_region  # Replace with your AWS regions
-}
-
 terraform {
   cloud {
     organization = "aws-infra-practice" # Replace with your Terraform Cloud organization
 
     workspaces {
-      name = "vpc-creation" # Replace with your workspace name in Terraform Cloud
+      name = "terraform-aws-eks" # Replace with your workspace name in Terraform Cloud
     }
   }
 
@@ -18,6 +13,11 @@ terraform {
       version = "~> 5.63.1" # Keep your existing AWS provider version
     }
   }
+}
+
+# provider.tf
+provider "aws" {
+  region = var.aws_region  # Replace with your AWS region
 }
 
 provider "kubernetes" {
@@ -43,3 +43,4 @@ data "aws_eks_cluster_auth" "main" {
 }
 
 data "aws_caller_identity" "current" {}
+

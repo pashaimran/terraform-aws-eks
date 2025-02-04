@@ -25,18 +25,16 @@ data "aws_eks_addon_version" "ebs_csi" {
 
 # Configure addons with dynamically fetched versions
 resource "aws_eks_addon" "vpc_cni" {
-  count                       = var.enable_vpc_cni ? 1 : 0
   cluster_name                = aws_eks_cluster.main.name
   addon_name                  = "vpc-cni"
-  addon_version               = data.aws_eks_addon_version.vpc_cni.version
+  addon_version              = data.aws_eks_addon_version.vpc_cni.version
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "PRESERVE"
 
-  depends_on = [aws_eks_node_group.main]  
+  depends_on = [aws_eks_node_group.main]
 }
 
 resource "aws_eks_addon" "coredns" {
-  count                      = var.enable_coredns ? 1 : 0
   cluster_name                = aws_eks_cluster.main.name
   addon_name                  = "coredns"
   addon_version              = data.aws_eks_addon_version.coredns.version
@@ -47,7 +45,6 @@ resource "aws_eks_addon" "coredns" {
 }
 
 resource "aws_eks_addon" "kube_proxy" {
-  count                       = var.enable_kube_proxy ? 1 : 0
   cluster_name                = aws_eks_cluster.main.name
   addon_name                  = "kube-proxy"
   addon_version              = data.aws_eks_addon_version.kube_proxy.version
@@ -58,7 +55,6 @@ resource "aws_eks_addon" "kube_proxy" {
 }
 
 resource "aws_eks_addon" "ebs_csi" {
-  count                       = var.enable_ebs_csi ? 1 : 0
   cluster_name                = aws_eks_cluster.main.name
   addon_name                  = "aws-ebs-csi-driver"
   addon_version              = data.aws_eks_addon_version.ebs_csi.version
