@@ -1,3 +1,6 @@
+# Retrieve AWS Account ID Dynamically
+data "aws_caller_identity" "current" {}
+
 resource "kubernetes_config_map" "aws_auth" {
   metadata {
     name      = "aws-auth"
@@ -11,7 +14,7 @@ resource "kubernetes_config_map" "aws_auth" {
   groups:
     - system:bootstrappers
     - system:nodes
-- rolearn: arn:aws:iam::${var.aws_account_id}:role/AdminRole
+- rolearn: arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/AdminRole
   username: admin
   groups:
     - system:masters

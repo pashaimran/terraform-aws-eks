@@ -112,6 +112,10 @@ variable "node_group_tags" {
   default     = {}
 }
 
+variable "aws_account_id" {
+  default = data.aws_caller_identity.current.account_id
+}
+
 # variable "ami_id" {
 #   description = "The AMI ID to use for the EC2 instances in the EKS node group."
 #   type        = string
