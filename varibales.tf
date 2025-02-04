@@ -112,10 +112,10 @@ variable "node_group_tags" {
   default     = {}
 }
 
-variable "ami_id" {
-  description = "The AMI ID to use for the EC2 instances in the EKS node group."
-  type        = string
-}
+# variable "ami_id" {
+#   description = "The AMI ID to use for the EC2 instances in the EKS node group."
+#   type        = string
+# }
 
 variable "enable_vpc_cni" {
   description = "Enable VPC CNI addon"
