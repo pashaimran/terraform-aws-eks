@@ -2,9 +2,9 @@ output "cluster_name" {
   value = aws_eks_cluster.main.name
 }
 
-# output "cluster_endpoint" {
-#   value = aws_eks_cluster.main.endpoint
-# }
+output "cluster_endpoint" {
+  value = aws_eks_cluster.main.endpoint
+}
 
 # output "node_group_status" {
 #   value = aws_eks_node_group.main.status
