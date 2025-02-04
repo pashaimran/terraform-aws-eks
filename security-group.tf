@@ -4,12 +4,13 @@ resource "aws_security_group" "eks_nodes" {
   description = "Security group for EKS nodes"
   vpc_id      = aws_eks_cluster.main.vpc_config[0].vpc_id
 
+  # Allow inbound traffic from the EKS cluster Security Group
   ingress {
-    description = "Allow all traffic from within the cluster"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = [aws_eks_cluster.main.vpc_config[0].cluster_security_group_id]
+    description     = "Allow traffic from EKS cluster security group"
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    security_groups = [aws_eks_cluster.main.vpc_config[0].cluster_security_group_id]  # ✅ Corrected
   }
 
   egress {
@@ -20,6 +21,7 @@ resource "aws_security_group" "eks_nodes" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
 
 # # Security Group for NGINX Ingress Controller
 # resource "aws_security_group" "nginx_ingress" {
