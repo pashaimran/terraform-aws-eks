@@ -1,5 +1,5 @@
-# Retrieve AWS Account ID Dynamically
-data "aws_caller_identity" "current" {}
+# # Retrieve AWS Account ID Dynamically
+# data "aws_caller_identity" "current" {}
 
 resource "kubernetes_config_map" "aws_auth" {
   metadata {
