@@ -21,8 +21,8 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
 
 # # OIDC associate, copy this oidc id after cluster creation and paste
 
-resource "aws_iam_openid_connect_provider" "eks" {
-  url             = "https://oidc.eks.${var.aws_region}.amazonaws.com/id/https://oidc.eks.ap-south-1.amazonaws.com/id/C1875370041CE5C4CC2CAB39F0AA5396"
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = ["9e99a48a9960b14926bb7f3b02e22da0afd60e22"] # Default EKS thumbprint
-}
+# resource "aws_iam_openid_connect_provider" "eks" {
+#   url             = "https://oidc.eks.${var.aws_region}.amazonaws.com/id/https://oidc.eks.ap-south-1.amazonaws.com/id/C1875370041CE5C4CC2CAB39F0AA5396"
+#   client_id_list  = ["sts.amazonaws.com"]
+#   thumbprint_list = ["9e99a48a9960b14926bb7f3b02e22da0afd60e22"] # Default EKS thumbprint
+# }
