@@ -46,7 +46,7 @@ resource "kubernetes_config_map_v1" "aws_auth" {
   data = {
     mapRoles = yamlencode([
       {
-        rolearn  = aws_iam_role.eks_node_group_role.arn  # Reference to your node group IAM role
+        rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.eks_node_group_role}"  # Reference to your node group IAM role
         username = "system:node:{{EC2PrivateDNSName}}"
         groups   = [
           "system:bootstrappers",
@@ -54,7 +54,7 @@ resource "kubernetes_config_map_v1" "aws_auth" {
         ]
       },
       {
-        rolearn  = aws_iam_role.eks_admin_role.arn  # Reference to your admin IAM role
+        rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.eks_admin_role}"  # Reference to your admin IAM role
         username = "admin"
         groups   = [
           "system:masters"
