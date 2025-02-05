@@ -11,8 +11,7 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
         userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${var.admin_user_name}"
         username = var.admin_user_name
         groups   = [
-          "system:masters",
-          "system:nodes"
+          "system:masters"
         ]
       }
     ])
