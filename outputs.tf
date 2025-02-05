@@ -1,29 +1,19 @@
-output "cluster_id" {
-  description = "The ID of the EKS cluster"
-  value       = aws_eks_cluster.main.id
+output "cluster_name" {
+  description = "The name of the EKS cluster"
+  value       = aws_eks_cluster.main.name
 }
 
-output "cluster_endpoint" {
-  description = "The endpoint of the EKS cluster"
-  value       = aws_eks_cluster.main.endpoint
+output "cluster_version" {
+  description = "Kubernetes version of the EKS cluster"
+  value       = aws_eks_cluster.main.version
 }
 
-output "cluster_certificate_authority" {
-  description = "The certificate authority data for the EKS cluster"
-  value       = aws_eks_cluster.main.certificate_authority[0].data
+output "cluster_iam_role_arn" {
+  description = "IAM Role ARN for the EKS cluster"
+  value       = aws_iam_role.eks_cluster_role.arn
 }
 
-output "cluster_security_group_id" {
-  description = "The security group ID of the EKS cluster"
-  value       = aws_security_group.cluster.id
-}
-
-# output "node_security_group_id" {
-#   description = "The security group ID of the EKS nodes"
-#   value       = aws_eks_node_group.main["*"].resources[0].remote_access_security_group_id
-# }
-
-output "oidc_provider_arn" {
-  description = "The ARN of the OIDC provider"
-  value       = aws_iam_openid_connect_provider.eks.arn
+output "configure_kubectl" {
+  description = "Command to configure kubectl"
+  value       = "aws eks update-kubeconfig --region ${var.aws_region} --name ${aws_eks_cluster.main.name}"
 }
