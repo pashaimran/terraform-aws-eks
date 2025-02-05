@@ -6,6 +6,7 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
   }
 
   data = {
+    # Adding the admin IAM user to system:masters group
     mapUsers = yamlencode([
       {
         userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${var.admin_user_name}"
@@ -14,14 +15,16 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
       }
     ])
 
+    # Adding the EKS admin role to system:masters group
     mapRoles = yamlencode([
       {
         rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.eks_admin_role}"
-        username = "system:node:{{EC2PrivateDNSName}}"
+        username = "admin"  # Use admin username for the EKS admin role
         groups   = ["system:masters"]
       }
     ])
   }
+
   force = true
   depends_on = [aws_eks_cluster.main]
 }
