@@ -29,7 +29,7 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
         rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.eks_node_group_role}"  # IAM role for the worker node group
         username = "system:node:{{EC2PrivateDNSName}}"  # Dynamically generated username for each node
         groups   = ["system:bootstrappers", "system:nodes"]  # Nodes are typically part of bootstrappers and nodes groups
-      }
+      },
 
       # cluster role
       {
