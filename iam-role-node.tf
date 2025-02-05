@@ -15,7 +15,7 @@ resource "aws_iam_role" "node" {
     ]
   })
 
-  tags = var.cluster_tags
+  tags = var.node_group_tags
 }
 
 resource "aws_iam_role_policy_attachment" "node_AmazonEKSWorkerNodePolicy" {

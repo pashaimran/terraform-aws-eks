@@ -98,10 +98,10 @@ variable "enabled_cluster_log_types" {
   default     = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 }
 
-variable "kms_key_arn" {
-  description = "ARN of KMS key for encryption"
-  type        = string
-}
+# variable "kms_key_arn" {
+#   description = "ARN of KMS key for encryption"
+#   type        = string
+# }
 
 variable "enable_vpc_cni" {
   description = "Enable VPC CNI addon"

@@ -14,12 +14,12 @@ resource "aws_eks_cluster" "main" {
 
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 
-  encryption_config {
-    provider {
-      key_arn = aws_kms_key.eks.arn
-    }
-    resources = ["secrets"]
-  }
+  # encryption_config {
+  #   provider {
+  #     key_arn = aws_kms_key.eks.arn
+  #   }
+  #   resources = ["secrets"]
+  # }
 
   depends_on = [
     aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy
