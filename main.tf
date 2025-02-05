@@ -22,7 +22,9 @@ resource "aws_eks_cluster" "main" {
   # }
 
   depends_on = [
-    aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy
+    aws_iam_role_policy_attachment.eks_cluster_policy,          # ✅ Correct reference
+    aws_iam_role_policy_attachment.eks_service_policy,
+    aws_iam_role_policy_attachment.eks_vpc_resource_controller
   ]
 
   tags = var.cluster_tags
