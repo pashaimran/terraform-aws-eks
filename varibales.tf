@@ -28,10 +28,10 @@ variable "private_subnet_ids" {
   type        = list(string)
 }
 
-# variable "node_group_name" {
-#   description = "Name of the EKS node group"
-#   type        = string
-# }
+variable "node_group_name" {
+  description = "Name of the EKS node group"
+  type        = string
+}
 
 variable "instance_types" {
   description = "List of instance types for the EKS node group"
@@ -81,16 +81,19 @@ variable "node_group_tags" {
 # }
 
 variable "admin_user_name" {
-  description = "IAM username for cluster admin"
+  description = "IAM user name for admin access"
   type        = string
-  default     = "imran"
 }
 
 variable "eks_admin_role" {
-  description = "The name of the IAM role for EKS admin access"
+  description = "IAM role name for EKS admin"
   type        = string
 }
 
+variable "eks_node_group_role" {
+  description = "IAM role name for the EKS node group"
+  type        = string
+}
 
 variable "enabled_cluster_log_types" {
   description = "List of desired control plane logging to enable"
