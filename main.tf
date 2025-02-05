@@ -1,27 +1,32 @@
-# main.tf
+# modules/eks/main.tf
+
 resource "aws_eks_cluster" "main" {
   name     = var.cluster_name
   role_arn = aws_iam_role.eks_cluster_role.arn
   version  = var.cluster_version  # Ensure this line is present
 
   vpc_config {
-    subnet_ids             = concat(var.public_subnet_ids, var.private_subnet_ids)
+    subnet_ids              = concat(var.public_subnet_ids, var.private_subnet_ids)
     endpoint_private_access = true
     endpoint_public_access  = true
-  }
-  
-  # ✅ Enable API and ConfigMap authentication
-  access_config {
-    authentication_mode = "API_AND_CONFIG_MAP"
+    security_group_ids      = [aws_security_group.cluster.id]
   }
 
-  tags = var.cluster_tags
+  enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+
+  encryption_config {
+    provider {
+      key_arn = aws_kms_key.eks.arn
+    }
+    resources = ["secrets"]
+  }
 
   depends_on = [
-    aws_iam_role_policy_attachment.eks_cluster_policy
+    aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy
   ]
-}
 
+  tags = var.cluster_tags
+}
 
 resource "aws_eks_node_group" "main" {
   cluster_name    = aws_eks_cluster.main.name
@@ -50,4 +55,3 @@ resource "aws_eks_node_group" "main" {
     aws_iam_role_policy_attachment.eks_container_registry_policy
   ]
 }
-

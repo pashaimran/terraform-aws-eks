@@ -1,44 +1,3 @@
-# # variables.tf
-# variable "aws_region" {
-#   description = "AWS region"
-#   type        = string
-#   default     = "us-west-2"
-# }
-
-# variable "cluster_name" {
-#   description = "Name of the EKS cluster"
-#   type        = string
-#   default     = "my-eks-cluster"
-# }
-
-# variable "vpc_id" {
-#   description = "VPC ID where the cluster will be created"
-#   type        = string
-# }
-
-# variable "private_subnet_ids" {
-#   description = "List of private subnet IDs"
-#   type        = list(string)
-# }
-
-# variable "node_group_desired_size" {
-#   description = "Desired number of worker nodes"
-#   type        = number
-#   default     = 2
-# }
-
-# variable "node_group_max_size" {
-#   description = "Maximum number of worker nodes"
-#   type        = number
-#   default     = 4
-# }
-
-# variable "node_group_min_size" {
-#   description = "Minimum number of worker nodes"
-#   type        = number
-#   default     = 1
-# }
-
 variable "aws_region" {
   description = "AWS region to deploy resources"
   type        = string
@@ -120,6 +79,29 @@ variable "node_group_tags" {
 #   description = "The AMI ID to use for the EC2 instances in the EKS node group."
 #   type        = string
 # }
+
+variable "admin_user_name" {
+  description = "IAM username for cluster admin"
+  type        = string
+  default     = "imran"
+}
+
+variable "eks_admin_role" {
+  description = "The name of the IAM role for EKS admin access"
+  type        = string
+}
+
+
+variable "enabled_cluster_log_types" {
+  description = "List of desired control plane logging to enable"
+  type        = list(string)
+  default     = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+}
+
+variable "kms_key_arn" {
+  description = "ARN of KMS key for encryption"
+  type        = string
+}
 
 variable "enable_vpc_cni" {
   description = "Enable VPC CNI addon"
