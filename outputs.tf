@@ -18,10 +18,10 @@ output "cluster_security_group_id" {
   value       = aws_security_group.cluster.id
 }
 
-output "node_security_group_id" {
-  description = "The security group ID of the EKS nodes"
-  value       = aws_eks_node_group.main["*"].resources[0].remote_access_security_group_id
-}
+# output "node_security_group_id" {
+#   description = "The security group ID of the EKS nodes"
+#   value       = aws_eks_node_group.main["*"].resources[0].remote_access_security_group_id
+# }
 
 output "oidc_provider_arn" {
   description = "The ARN of the OIDC provider"
