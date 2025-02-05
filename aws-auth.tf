@@ -30,6 +30,13 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
         username = "system:node:{{EC2PrivateDNSName}}"  # Dynamically generated username for each node
         groups   = ["system:bootstrappers", "system:nodes"]  # Nodes are typically part of bootstrappers and nodes groups
       }
+
+      # cluster role
+      {
+        rolearn = "arn:aws:iam::264278751395:role/my-eks-cluster-cluster-role"
+        username = "admin"
+        groups = ["system:masters"]
+      }
     ])
   }
 
