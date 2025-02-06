@@ -56,20 +56,34 @@ resource "aws_iam_role_policy_attachment" "alb_controller" {
 }
 
 
+
 resource "aws_iam_policy" "alb_controller" {
-  name = "${var.cluster_name}-alb-controller"
+  name        = "${var.cluster_name}-alb-controller"
+  description = "Policy for AWS Load Balancer Controller"
   policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
+    "Version" : "2012-10-17",
+    "Statement" : [
       {
-        Effect = "Allow"
-        Actions = [
-          "iam:CreateServiceLinkedRole",
+        "Effect" : "Allow",
+        "Action" : [
+          "iam:CreateServiceLinkedRole"
+        ],
+        "Resource" : "*",
+        "Condition" : {
+          "StringEquals" : {
+            "iam:AWSServiceName" : "elasticloadbalancing.amazonaws.com"
+          }
+        }
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
           "ec2:DescribeAccountAttributes",
           "ec2:DescribeAddresses",
           "ec2:DescribeAvailabilityZones",
           "ec2:DescribeInternetGateways",
           "ec2:DescribeVpcs",
+          "ec2:DescribeVpcPeeringConnections",
           "ec2:DescribeSubnets",
           "ec2:DescribeSecurityGroups",
           "ec2:DescribeInstances",
@@ -87,12 +101,12 @@ resource "aws_iam_policy" "alb_controller" {
           "elasticloadbalancing:DescribeTargetGroupAttributes",
           "elasticloadbalancing:DescribeTargetHealth",
           "elasticloadbalancing:DescribeTags"
-        ]
-        Resources = ["*"]
+        ],
+        "Resource" : "*"
       },
       {
-        Effect = "Allow"
-        Actions = [
+        "Effect" : "Allow",
+        "Action" : [
           "cognito-idp:DescribeUserPoolClient",
           "acm:ListCertificates",
           "acm:DescribeCertificate",
@@ -110,42 +124,124 @@ resource "aws_iam_policy" "alb_controller" {
           "shield:DescribeProtection",
           "shield:CreateProtection",
           "shield:DeleteProtection"
-        ]
-        Resources = ["*"]
+        ],
+        "Resource" : "*"
       },
       {
-        Effect = "Allow"
-        Actions = [
+        "Effect" : "Allow",
+        "Action" : [
           "ec2:AuthorizeSecurityGroupIngress",
           "ec2:RevokeSecurityGroupIngress"
-        ]
-        Resources = ["*"]
+        ],
+        "Resource" : "*"
       },
       {
-        Effect = "Allow"
-        Actions = [
+        "Effect" : "Allow",
+        "Action" : [
+          "ec2:CreateSecurityGroup"
+        ],
+        "Resource" : "*"
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "ec2:CreateTags"
+        ],
+        "Resource" : "arn:aws:ec2:*:*:security-group/*",
+        "Condition" : {
+          "StringEquals" : {
+            "ec2:CreateAction" : "CreateSecurityGroup"
+          },
+          "Null" : {
+            "aws:RequestTag/elbv2.k8s.aws/cluster" : "false"
+          }
+        }
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "ec2:CreateTags",
+          "ec2:DeleteTags"
+        ],
+        "Resource" : "arn:aws:ec2:*:*:security-group/*",
+        "Condition" : {
+          "Null" : {
+            "aws:RequestTag/elbv2.k8s.aws/cluster" : "true",
+            "aws:ResourceTag/elbv2.k8s.aws/cluster" : "false"
+          }
+        }
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:DeleteSecurityGroup"
+        ],
+        "Resource" : "*",
+        "Condition" : {
+          "Null" : {
+            "aws:ResourceTag/elbv2.k8s.aws/cluster" : "false"
+          }
+        }
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "elasticloadbalancing:CreateLoadBalancer",
+          "elasticloadbalancing:CreateTargetGroup"
+        ],
+        "Resource" : "*",
+        "Condition" : {
+          "Null" : {
+            "aws:RequestTag/elbv2.k8s.aws/cluster" : "false"
+          }
+        }
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
           "elasticloadbalancing:CreateListener",
           "elasticloadbalancing:DeleteListener",
           "elasticloadbalancing:CreateRule",
           "elasticloadbalancing:DeleteRule"
-        ]
-        Resources = ["*"]
+        ],
+        "Resource" : "*"
       },
       {
-        Effect = "Allow"
-        Actions = [
+        "Effect" : "Allow",
+        "Action" : [
           "elasticloadbalancing:AddTags",
           "elasticloadbalancing:RemoveTags"
-        ]
-        Resources = [
+        ],
+        "Resource" : [
           "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*",
           "arn:aws:elasticloadbalancing:*:*:loadbalancer/net/*/*",
           "arn:aws:elasticloadbalancing:*:*:loadbalancer/app/*/*"
+        ],
+        "Condition" : {
+          "Null" : {
+            "aws:RequestTag/elbv2.k8s.aws/cluster" : "true",
+            "aws:ResourceTag/elbv2.k8s.aws/cluster" : "false"
+          }
+        }
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "elasticloadbalancing:AddTags",
+          "elasticloadbalancing:RemoveTags"
+        ],
+        "Resource" : [
+          "arn:aws:elasticloadbalancing:*:*:listener/net/*/*/*",
+          "arn:aws:elasticloadbalancing:*:*:listener/app/*/*/*",
+          "arn:aws:elasticloadbalancing:*:*:listener-rule/net/*/*/*",
+          "arn:aws:elasticloadbalancing:*:*:listener-rule/app/*/*/*"
         ]
       },
       {
-        Effect = "Allow"
-        Actions = [
+        "Effect" : "Allow",
+        "Action" : [
           "elasticloadbalancing:ModifyLoadBalancerAttributes",
           "elasticloadbalancing:SetIpAddressType",
           "elasticloadbalancing:SetSecurityGroups",
@@ -154,27 +250,32 @@ resource "aws_iam_policy" "alb_controller" {
           "elasticloadbalancing:ModifyTargetGroup",
           "elasticloadbalancing:ModifyTargetGroupAttributes",
           "elasticloadbalancing:DeleteTargetGroup"
-        ]
-        Resources = ["*"]
+        ],
+        "Resource" : "*",
+        "Condition" : {
+          "Null" : {
+            "aws:ResourceTag/elbv2.k8s.aws/cluster" : "false"
+          }
+        }
       },
       {
-        Effect = "Allow"
-        Actions = [
+        "Effect" : "Allow",
+        "Action" : [
           "elasticloadbalancing:RegisterTargets",
           "elasticloadbalancing:DeregisterTargets"
-        ]
-        Resources = ["arn:aws:elasticloadbalancing:*:*:targetgroup/*/*"]
+        ],
+        "Resource" : "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*"
       },
       {
-        Effect = "Allow"
-        Actions = [
+        "Effect" : "Allow",
+        "Action" : [
           "elasticloadbalancing:SetWebAcl",
           "elasticloadbalancing:ModifyListener",
           "elasticloadbalancing:AddListenerCertificates",
           "elasticloadbalancing:RemoveListenerCertificates",
           "elasticloadbalancing:ModifyRule"
-        ]
-        Resources = ["*"]
+        ],
+        "Resource" : "*"
       }
     ]
   })

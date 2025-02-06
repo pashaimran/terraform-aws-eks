@@ -71,13 +71,13 @@
 # # }
 
 
-
 resource "helm_release" "alb_controller" {
   name             = "aws-load-balancer-controller"
   repository       = "https://aws.github.io/eks-charts"
   chart            = "aws-load-balancer-controller"
   namespace        = "kube-system"
-  create_namespace = false
+  create_namespace = true
+  timeout          = 600  # Increased timeout to 5 minutes
 
   set {
     name  = "clusterName"
@@ -93,19 +93,9 @@ resource "helm_release" "alb_controller" {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
     value = aws_iam_role.alb_controller.arn
   }
+
+  depends_on = [aws_iam_role_policy_attachment.alb_controller]
 }
-
-
-# # variables for controller creation
-# variable "oidc_provider_arn" {
-#   description = "ARN of the OIDC Provider"
-#   type        = string
-# }
-
-# variable "cluster_oidc_issuer_url" {
-#   description = "URL of the OIDC Provider"
-#   type        = string
-# }
 
 
 # output for alb controller
