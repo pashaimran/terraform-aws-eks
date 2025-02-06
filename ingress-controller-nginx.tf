@@ -3,11 +3,11 @@ resource "helm_release" "aws_load_balancer_controller" {
   name       = "aws-load-balancer-controller"
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
-  namespace  = "kube-system"
+  namespace  = "aws-load-balancer-controller"
   version    = var.alb_controller_version
 
   timeout = 600  # Timeout in seconds, adjust as needed
-  
+
   set {
     name  = "clusterName"
     value = var.cluster_name
@@ -22,6 +22,11 @@ resource "helm_release" "aws_load_balancer_controller" {
     name  = "serviceAccount.name"
     value = aws_iam_role.alb_role.name
   }
+
+  set {
+    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = aws_iam_role.alb_role.arn
+}
 }
 
 # IAM ROLE for ALB controller
@@ -38,7 +43,7 @@ resource "aws_iam_role" "alb_role" {
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
           "StringEquals" = {
-            "${replace(aws_eks_cluster.main.identity[0].oidc[0].issuer, "https://", "")}:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
+            "${replace(aws_eks_cluster.main.identity[0].oidc[0].issuer, "https://", "")}:sub": "system:serviceaccount:aws-load-balancer-controller:aws-load-balancer-controller"
           }
         }
       }
@@ -59,27 +64,25 @@ resource "aws_iam_policy" "alb_policy" {
         Effect = "Allow"
         Action = [
           "iam:CreateServiceLinkedRole",
-          "ec2:DescribeAccountAttributes",
-          "ec2:DescribeAddresses",
-          "ec2:DescribeInternetGateways",
-          "ec2:DescribeVpcs",
-          "ec2:DescribeSubnets",
-          "ec2:DescribeSecurityGroups",
-          "ec2:DescribeInstances",
-          "ec2:DescribeNetworkInterfaces",
-          "ec2:DescribeTags",
-          "ec2:GetCoipPoolUsage",
-          "ec2:DescribeCoipPools",
-          "elasticloadbalancing:DescribeLoadBalancers",
-          "elasticloadbalancing:DescribeLoadBalancerAttributes",
-          "elasticloadbalancing:DescribeListeners",
-          "elasticloadbalancing:DescribeListenerCertificates",
-          "elasticloadbalancing:DescribeSSLPolicies",
-          "elasticloadbalancing:DescribeRules",
-          "elasticloadbalancing:DescribeTargetGroups",
-          "elasticloadbalancing:DescribeTargetGroupAttributes",
-          "elasticloadbalancing:DescribeTargetHealth",
-          "elasticloadbalancing:DescribeTags"
+          "ec2:CreateTags",
+          "elasticloadbalancing:CreateListener",
+          "elasticloadbalancing:CreateLoadBalancer",
+          "elasticloadbalancing:CreateRule",
+          "elasticloadbalancing:CreateTargetGroup",
+          "elasticloadbalancing:DeleteListener",
+          "elasticloadbalancing:DeleteLoadBalancer",
+          "elasticloadbalancing:DeleteRule",
+          "elasticloadbalancing:DeleteTargetGroup",
+          "elasticloadbalancing:ModifyListener",
+          "elasticloadbalancing:ModifyLoadBalancerAttributes",
+          "elasticloadbalancing:ModifyRule",
+          "elasticloadbalancing:ModifyTargetGroup",
+          "elasticloadbalancing:ModifyTargetGroupAttributes",
+          "elasticloadbalancing:RegisterTargets",
+          "elasticloadbalancing:DeregisterTargets",
+          "elasticloadbalancing:SetIpAddressType",
+          "elasticloadbalancing:SetSecurityGroups",
+          "elasticloadbalancing:SetSubnets"
         ]
         Resource = "*"
       },
@@ -132,7 +135,7 @@ resource "helm_release" "nginx_ingress" {
   name        = "nginx-ingress"
   repository  = "https://kubernetes.github.io/ingress-nginx"
   chart       = "ingress-nginx"
-  namespace   = "kube-system"
+  namespace   = "ingress-nginx"
   version     = var.ingress_version
 
   set {
