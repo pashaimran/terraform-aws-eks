@@ -69,3 +69,57 @@
 # #   description = "Status of the AWS Load Balancer Controller"
 # #   value       = helm_release.aws_load_balancer_controller.status
 # # }
+
+
+
+resource "helm_release" "alb_controller" {
+  name             = "aws-load-balancer-controller"
+  repository       = "https://aws.github.io/eks-charts"
+  chart            = "aws-load-balancer-controller"
+  namespace        = "kube-system"
+  create_namespace = false
+
+  set {
+    name  = "clusterName"
+    value = var.cluster_name
+  }
+
+  set {
+    name  = "serviceAccount.create"
+    value = "true"
+  }
+
+  set {
+    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = aws_iam_role.alb_controller.arn
+  }
+}
+
+
+# # variables for controller creation
+# variable "oidc_provider_arn" {
+#   description = "ARN of the OIDC Provider"
+#   type        = string
+# }
+
+# variable "cluster_oidc_issuer_url" {
+#   description = "URL of the OIDC Provider"
+#   type        = string
+# }
+
+
+# output for alb controller
+
+# modules/aws-load-balancer-controller/outputs.tf
+output "iam_role_arn" {
+  description = "ARN of IAM role for ALB controller"
+  value       = aws_iam_role.alb_controller.arn
+}
+
+output "iam_role_name" {
+  description = "Name of IAM role for ALB controller"
+  value       = aws_iam_role.alb_controller.name
+}
+
+
+
