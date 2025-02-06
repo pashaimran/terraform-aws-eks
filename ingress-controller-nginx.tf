@@ -35,21 +35,21 @@ resource "helm_release" "aws_load_balancer_controller" {
 }
 
 
-# Deploy Nginx Ingress after ALB Controller
-resource "helm_release" "nginx_ingress" {
-  name        = "nginx-ingress"
-  repository  = "https://kubernetes.github.io/ingress-nginx"
-  chart       = "ingress-nginx"
-  namespace   = "ingress-nginx"
-  version     = var.ingress_version
+# # Deploy Nginx Ingress after ALB Controller
+# resource "helm_release" "nginx_ingress" {
+#   name        = "nginx-ingress"
+#   repository  = "https://kubernetes.github.io/ingress-nginx"
+#   chart       = "ingress-nginx"
+#   namespace   = "ingress-nginx"
+#   version     = var.ingress_version
 
-  set {
-    name  = "controller.service.type"
-    value = "NodePort"
-  }
+#   set {
+#     name  = "controller.service.type"
+#     value = "NodePort"
+#   }
 
-  depends_on  = [helm_release.aws_load_balancer_controller]
-}
+#   depends_on  = [helm_release.aws_load_balancer_controller]
+# }
 
 
 # terraform/module/eks/variable.tf
@@ -58,10 +58,10 @@ variable "alb_controller_version" {
   type        = string
 }
 
-variable "ingress_version" {
-  description = "Version of Nginx Ingress Helm chart"
-  type        = string
-}
+# variable "ingress_version" {
+#   description = "Version of Nginx Ingress Helm chart"
+#   type        = string
+# }
 
 
 # # terraform/module/eks/output.tf
