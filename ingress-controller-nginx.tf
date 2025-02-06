@@ -6,7 +6,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   namespace  = "kube-system"
   version    = var.alb_controller_version
 
-  timeout = 600  # Timeout in seconds, adjust as needed
+  timeout = 6000  # Timeout in seconds, adjust as needed
 
   set {
     name  = "clusterName"
@@ -64,8 +64,8 @@ variable "ingress_version" {
 }
 
 
-# terraform/module/eks/output.tf
-output "alb_controller_status" {
-  description = "Status of the AWS Load Balancer Controller"
-  value       = helm_release.aws_load_balancer_controller.status
-}
+# # terraform/module/eks/output.tf
+# output "alb_controller_status" {
+#   description = "Status of the AWS Load Balancer Controller"
+#   value       = helm_release.aws_load_balancer_controller.status
+# }
