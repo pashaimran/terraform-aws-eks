@@ -31,7 +31,7 @@ resource "aws_iam_role" "alb_role" {
       {
         Effect = "Allow"
         Principal = {
-          Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${replace(data.aws_eks_cluster.eks.identity[0].oidc[0].issuer, "https://", "")}"
+          Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${replace(aws_eks_cluster.main.identity[0].oidc[0].issuer, "https://", "")}"
         }
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
@@ -50,7 +50,7 @@ resource "aws_iam_policy" "alb_policy" {
   name        = "AWSLoadBalancerControllerIAMPolicy"
   description = "IAM Policy for AWS Load Balancer Controller"
 
-  policy = file("aws_load_balancer_controller_policy.json")
+  policy = file("./aws_load_balancer_controller_policy.json")
 }
 
 resource "aws_iam_role_policy_attachment" "alb_attach" {
