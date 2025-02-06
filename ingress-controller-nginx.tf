@@ -6,6 +6,8 @@ resource "helm_release" "aws_load_balancer_controller" {
   namespace  = "kube-system"
   version    = var.alb_controller_version
 
+  timeout = 600  # Timeout in seconds, adjust as needed
+  
   set {
     name  = "clusterName"
     value = var.cluster_name
