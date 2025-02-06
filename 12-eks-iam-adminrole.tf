@@ -1,5 +1,3 @@
-# Retrieve the Prometheus and Grafana services from the Kubernetes cluster.
-
 resource "aws_iam_role" "eks_admin" {
   name = "EKSAdminRole"
 
