@@ -3,7 +3,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   name       = "aws-load-balancer-controller"
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
-  namespace  = "aws-load-balancer-controller"
+  namespace  = "kube-system"
   version    = var.alb_controller_version
 
   timeout = 600  # Timeout in seconds, adjust as needed
@@ -43,7 +43,7 @@ resource "aws_iam_role" "alb_role" {
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
           "StringEquals" = {
-            "${replace(aws_eks_cluster.main.identity[0].oidc[0].issuer, "https://", "")}:sub": "system:serviceaccount:aws-load-balancer-controller:aws-load-balancer-controller"
+            "${replace(aws_eks_cluster.main.identity[0].oidc[0].issuer, "https://", "")}:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
           }
         }
       }
