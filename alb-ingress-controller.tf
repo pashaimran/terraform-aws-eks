@@ -94,6 +94,16 @@ resource "helm_release" "alb_controller" {
     value = aws_iam_role.alb_controller.arn
   }
 
+  set {
+    name  = "vpcId"
+    value = data.aws_eks_cluster.this.vpc_config[0].vpc_id
+  }
+
+  set {
+    name  = "region"
+    value = data.aws_region.current.name
+  }
+  
   depends_on = [aws_iam_role_policy_attachment.alb_controller]
 }
 
