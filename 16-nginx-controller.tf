@@ -6,7 +6,17 @@ resource "helm_release" "nginx_ingress" {
   namespace        = "ingress-nginx"
   create_namespace = true
   version          = var.nginx_chart_version
+  
+  set {
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-scheme"
+    value = "internet-facing"
+  }
 
+  set {
+    name  = "controller.service.type"
+    value = "LoadBalancer"
+  }
+  
   values = [
     yamlencode({
       controller = {
