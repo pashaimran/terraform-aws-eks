@@ -10,7 +10,7 @@ resource "helm_release" "argocd_cluster" {
   namespace  = var.argocd_cluster_namespace
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
-  version    = var.argocd_version
+  version    = var.argocd_cluster_version
 
   set {
     name  = "server.service.type"
@@ -30,7 +30,7 @@ variable "argocd_cluster_namespace" {
 #   default     = "argocd-cluster"
 }
 
-variable "argocd_version" {
+variable "argocd_cluster_version" {
   type        = string
 #   default     = "6.1.0" # Use latest stable version
 }

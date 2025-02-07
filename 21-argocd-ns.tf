@@ -4,7 +4,7 @@ resource "helm_release" "argocd_ns" {
   namespace  = var.argocd_namespace
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
-  version    = var.argocd_version
+  version    = var.argocd_namespace_version
 
   set {
     name  = "server.service.type"
@@ -25,10 +25,10 @@ resource "kubernetes_namespace" "argocd" {
   }
 }
 
-# variable "argocd_version" {
-#   type        = string
-# #   default     = "6.1.0" # Use latest stable version
-# }
+variable "argocd_namespace_version" {
+  type        = string
+#   default     = "6.1.0" # Use latest stable version
+}
 
 variable "argocd_namespace" {
   type        = string
