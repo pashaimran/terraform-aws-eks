@@ -22,8 +22,7 @@ resource "helm_release" "argocd_cluster" {
     value = "true"
   }
   depends_on = [
-    aws_eks_cluster.main,
-    kubernetes_cluster_role.argocd_cluster_role
+    aws_eks_cluster.main
   ]
 }
 
