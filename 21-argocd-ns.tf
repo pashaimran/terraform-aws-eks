@@ -6,16 +6,20 @@ resource "helm_release" "argocd_ns" {
   chart      = "argo-cd"
   version    = var.argocd_namespace_version
 
-  set {
-    name  = "server.service.type"
-    value = "LoadBalancer"
-  }
+#   set {
+#     name  = "server.service.type"
+#     value = "LoadBalancer"
+#   }
 
   set {
-    name  = "service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-scheme"
-    value = "internet-facing"
+    name  = "server.service.type"
+    value = "ClusterIP"
   }
-  
+#   set {
+#     name  = "service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-scheme"
+#     value = "internet-facing"
+#   }
+
   set {
     name  = "serviceAccount.create"
     value = "true"

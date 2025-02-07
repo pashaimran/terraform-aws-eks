@@ -12,15 +12,21 @@ resource "helm_release" "argocd_cluster" {
   chart      = "argo-cd"
   version    = var.argocd_cluster_version
 
+#   set {
+#     name  = "server.service.type"
+#     value = "LoadBalancer"
+#   }
+
+#   set {
+#     name  = "service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-scheme"
+#     value = "internet-facing"
+#   }
+
   set {
     name  = "server.service.type"
-    value = "LoadBalancer"
+    value = "ClusterIP"
   }
-
-    set {
-    name  = "service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-scheme"
-    value = "internet-facing"
-    }
+  
   set {
     name  = "serviceAccount.create"
     value = "true"
