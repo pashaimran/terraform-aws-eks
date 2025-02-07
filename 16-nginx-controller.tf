@@ -16,7 +16,7 @@ resource "helm_release" "nginx_ingress" {
     name  = "controller.service.type"
     value = "LoadBalancer"
   }
-  
+
   values = [
     yamlencode({
       controller = {
@@ -34,6 +34,13 @@ resource "helm_release" "nginx_ingress" {
           "use-forwarded-headers" = "true"
           "compute-full-forwarded-for" = "true"
           "use-proxy-protocol"    = "false"
+          "allow-snippet-annotations": "true",
+          "compute-full-forwarded-for": "true",
+          "use-forwarded-headers": "true",
+          "use-proxy-protocol": "false",
+          "ssl-passthrough": "true",
+          "enable-ssl-passthrough": "true"
+
         }
         metrics = {
           enabled = true

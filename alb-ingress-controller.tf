@@ -95,6 +95,16 @@ resource "helm_release" "alb_controller" {
   }
 
   set {
+    name  = "ingressClass.name"
+    value = "alb"
+  }
+
+  set {
+    name  = "ingressClass.default"
+    value = "true"
+  }
+
+  set {
     name  = "vpcId"
     value = data.aws_eks_cluster.this.vpc_config[0].vpc_id
   }
