@@ -12,6 +12,11 @@ resource "helm_release" "argocd_ns" {
   }
 
   set {
+    name  = "service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-scheme"
+    value = "internet-facing"
+  }
+  
+  set {
     name  = "serviceAccount.create"
     value = "true"
   }
