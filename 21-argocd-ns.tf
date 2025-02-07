@@ -25,10 +25,10 @@ resource "kubernetes_namespace" "argocd" {
   }
 }
 
-variable "argocd_version" {
-  type        = string
-#   default     = "6.1.0" # Use latest stable version
-}
+# variable "argocd_version" {
+#   type        = string
+# #   default     = "6.1.0" # Use latest stable version
+# }
 
 variable "argocd_namespace" {
   type        = string
