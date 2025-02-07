@@ -15,7 +15,16 @@ resource "helm_release" "argocd_ns" {
     name  = "serviceAccount.create"
     value = "true"
   }
-  depends_on = [aws_eks_cluster.main]
+
+  set {
+    name  = "installCRDs"
+    value = "false" # Prevents Helm from trying to install CRDs again
+  }
+
+  depends_on = [
+    aws_eks_cluster.main,
+    helm_release.argocd_cluster
+  ]
 }
 
 # Create ArgoCD namespace for namespace-level deployments
