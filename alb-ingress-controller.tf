@@ -95,12 +95,12 @@ resource "helm_release" "alb_controller" {
   }
 
   set {
-    name  = "ingressClass.name"
+    name  = "ingressClassName"
     value = "alb"
   }
 
   set {
-    name  = "ingressClass.default"
+    name  = "defaultIngressClass"
     value = "true"
   }
 
