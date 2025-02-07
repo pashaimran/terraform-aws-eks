@@ -44,6 +44,7 @@ resource "helm_release" "nginx_ingress" {
       }
     })
   ]
+  depends_on = [aws_eks_cluster.main]
 }
 
 # Variable.tf

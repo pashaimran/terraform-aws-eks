@@ -1,0 +1,29 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argocd-ns-role
+  namespace: demo-project
+rules:
+  - apiGroups: ["", "apps", "networking.k8s.io", "batch", "policy", "autoscaling"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["pods", "services", "deployments", "secrets", "configmaps"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argocd-ns-rolebinding
+  namespace: demo-project
+subjects:
+  - kind: ServiceAccount
+    name: argocd-ns-sa
+    namespace: argocd
+roleRef:
+  kind: Role
+  name: argocd-ns-role
+  apiGroup: rbac.authorization.k8s.io
