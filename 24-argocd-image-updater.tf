@@ -36,8 +36,8 @@ resource "helm_release" "updater" {
 
   repository       = "https://argoproj.github.io/argo-helm"
   chart            = "argocd-image-updater"
-  namespace        = "argocd"
-  create_namespace = true
+  namespace        = "demo-project"
+  create_namespace = false
   version          = "0.11.0"
 
   values = [file(".terraform/modules/eks/24.1-image-updater.yaml")]
