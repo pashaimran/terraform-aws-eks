@@ -54,6 +54,14 @@ resource "aws_eks_addon" "kube_proxy" {
   depends_on = [aws_eks_node_group.main]
 }
 
+resource "aws_eks_addon" "pod_identity" {
+  cluster_name  = aws_eks_cluster.main.name
+  addon_name    = "eks-pod-identity-agent"
+  addon_version = "v1.3.0-eksbuild.1"
+
+  depends_on = [aws_eks_node_group.main]
+}
+
 resource "aws_eks_addon" "ebs_csi" {
   cluster_name                = aws_eks_cluster.main.name
   addon_name                  = "aws-ebs-csi-driver"

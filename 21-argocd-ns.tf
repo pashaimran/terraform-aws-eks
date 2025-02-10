@@ -30,6 +30,11 @@ resource "helm_release" "argocd_ns" {
     value = "false" # Prevents Helm from trying to install CRDs again
   }
 
+  set {
+    name  = "server.insecure"
+    value = "true"
+  }
+
   depends_on = [
     aws_eks_cluster.main,
     helm_release.argocd_cluster

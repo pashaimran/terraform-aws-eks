@@ -113,9 +113,26 @@ resource "helm_release" "alb_controller" {
     name  = "region"
     value = data.aws_region.current.name
   }
+
+  # If you're setting this in Terraform with helm_release, it would look like:
+set {
+  name  = "server.insecure"
+  value = "true"
+}
+
+set {
+  name  = "configs.params.server\\.insecure"
+  value = "true"
+}
+
+set {
+  name  = "server.ingress.enabled"
+  value = "true"
+}
   
   depends_on = [aws_iam_role_policy_attachment.alb_controller]
 }
+
 
 
 # output for alb controller
