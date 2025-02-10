@@ -40,7 +40,7 @@ resource "helm_release" "updater" {
   create_namespace = true
   version          = "0.11.0"
 
-  values = [file("24.1-image-updater.yaml")]
+  values = [file("terraform-aws-eks/24.1-image-updater.yaml")]
 
   depends_on = [helm_release.argocd_ns]
 }
