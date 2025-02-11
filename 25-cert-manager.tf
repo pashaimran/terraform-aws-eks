@@ -1,22 +1,12 @@
-# cert-manager.tf
+# Create Namespace for Cert-Manager
 resource "kubernetes_namespace" "cert_manager" {
   metadata {
     name = "cert-manager"
   }
 }
 
-# External data source to check if ServiceAccount exists
-data "external" "check_sa" {
-  program = ["sh", "-c", <<EOT
-    kubectl get sa cert-manager -n cert-manager --ignore-not-found -o json | jq '{exists: (.metadata.name != null)}'
-  EOT
-  ]
-}
-
-# Create ServiceAccount only if it doesn't exist
+# Create ServiceAccount for Cert-Manager
 resource "kubernetes_service_account" "cert_manager" {
-  count = data.external.check_sa.result["exists"] == "true" ? 0 : 1
-
   metadata {
     name      = "cert-manager"
     namespace = kubernetes_namespace.cert_manager.metadata[0].name
@@ -33,7 +23,7 @@ resource "helm_release" "cert_manager" {
   namespace        = kubernetes_namespace.cert_manager.metadata[0].name
   repository       = "https://charts.jetstack.io"
   chart            = "cert-manager"
-  version          = "1.13.3"  # Corrected version format (removed 'v')
+  version          = "1.13.3"  # Corrected version
 
   create_namespace = false
 
@@ -65,12 +55,11 @@ resource "helm_release" "cert_manager" {
   
   set {
     name  = "serviceAccount.name"
-    value = "cert-manager"  # Use fixed name since SA may not always be created by Terraform
+    value = kubernetes_service_account.cert_manager.metadata[0].name
   }
 
   depends_on = [
-    kubernetes_cluster_role.cert_manager,
-    kubernetes_cluster_role_binding.cert_manager,
+    kubernetes_namespace.cert_manager,
     kubernetes_service_account.cert_manager
   ]
 }
