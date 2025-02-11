@@ -5,12 +5,36 @@ resource "kubernetes_namespace" "cert_manager" {
   }
 }
 
+# External data source to check if ServiceAccount exists
+data "external" "check_sa" {
+  program = ["sh", "-c", <<EOT
+    kubectl get sa cert-manager -n cert-manager --ignore-not-found -o json | jq '{exists: (.metadata.name != null)}'
+  EOT
+  ]
+}
+
+# Create ServiceAccount only if it doesn't exist
+resource "kubernetes_service_account" "cert_manager" {
+  count = data.external.check_sa.result["exists"] == "true" ? 0 : 1
+
+  metadata {
+    name      = "cert-manager"
+    namespace = kubernetes_namespace.cert_manager.metadata[0].name
+    labels = {
+      "app.kubernetes.io/name"      = "cert-manager"
+      "app.kubernetes.io/component" = "controller"
+    }
+  }
+}
+
+# Install Helm release for Cert-Manager
 resource "helm_release" "cert_manager" {
   name             = "cert-manager"
   namespace        = kubernetes_namespace.cert_manager.metadata[0].name
   repository       = "https://charts.jetstack.io"
   chart            = "cert-manager"
-  version          = "v1.13.3"
+  version          = "1.13.3"  # Corrected version format (removed 'v')
+
   create_namespace = false
 
   set {
@@ -27,40 +51,28 @@ resource "helm_release" "cert_manager" {
     EOT
   ]
 
-  # Optional: Enable Prometheus monitoring
+  # Enable Prometheus monitoring
   set {
     name  = "prometheus.enabled"
     value = "true"
   }
+
+  # Use the manually created ServiceAccount
   set {
     name  = "serviceAccount.create"
-    value = "false"  # We created it manually above
+    value = "false"
   }
-
+  
   set {
     name  = "serviceAccount.name"
-    value = kubernetes_service_account.cert_manager.metadata[0].name
+    value = "cert-manager"  # Use fixed name since SA may not always be created by Terraform
   }
 
   depends_on = [
     kubernetes_cluster_role.cert_manager,
-    kubernetes_cluster_role_binding.cert_manager
+    kubernetes_cluster_role_binding.cert_manager,
+    kubernetes_service_account.cert_manager
   ]
-}
-
-
-# Create ServiceAccount
-resource "kubernetes_service_account" "cert_manager" {
-  count = data.external.check_sa.result["exists"] == true ? 0 : 1
-  metadata {
-    name      = "cert-manager"
-    namespace = kubernetes_namespace.cert_manager.metadata[0].name
-    labels = {
-      "app.kubernetes.io/name"      = "cert-manager"
-      "app.kubernetes.io/component" = "controller"
-    }
-  }
-
 }
 
 # Create ClusterRole
