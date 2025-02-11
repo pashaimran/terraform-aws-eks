@@ -18,10 +18,14 @@ resource "helm_release" "cert_manager" {
     value = "true"
   }
 
-  set {
-    name  = "extraArgs[0]"
-    value = "--dns01-recursive-nameservers=1.1.1.1:53,8.8.8.8:53"
-  }
+  values = [
+    <<-EOT
+    extraArgs:
+      - --dns01-recursive-nameservers=1.1.1.1:53
+      - --dns01-recursive-nameservers=8.8.8.8:53
+      - --dns01-recursive-nameservers-only
+    EOT
+  ]
 
   # Optional: Enable Prometheus monitoring
   set {
