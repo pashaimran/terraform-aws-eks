@@ -43,7 +43,6 @@ resource "helm_release" "cert_manager" {
   }
 
   depends_on = [
-    kubernetes_service_account.cert_manager,
     kubernetes_cluster_role.cert_manager,
     kubernetes_cluster_role_binding.cert_manager
   ]
@@ -52,6 +51,7 @@ resource "helm_release" "cert_manager" {
 
 # Create ServiceAccount
 resource "kubernetes_service_account" "cert_manager" {
+  count = data.external.check_sa.result["exists"] == true ? 0 : 1
   metadata {
     name      = "cert-manager"
     namespace = kubernetes_namespace.cert_manager.metadata[0].name
