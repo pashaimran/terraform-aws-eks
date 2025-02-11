@@ -124,3 +124,50 @@ resource "kubernetes_cluster_role_binding" "cert_manager" {
     namespace = kubernetes_namespace.cert_manager.metadata[0].name
   }
 }
+
+
+# Webhook ServiceAccount
+resource "kubernetes_service_account" "cert_manager_webhook" {
+  metadata {
+    name      = "cert-manager-webhook"
+    namespace = kubernetes_namespace.cert_manager.metadata[0].name
+    labels = {
+      "app.kubernetes.io/name"      = "webhook"
+      "app.kubernetes.io/component" = "webhook"
+    }
+  }
+}
+
+# Webhook Role
+resource "kubernetes_role" "cert_manager_webhook" {
+  metadata {
+    name      = "cert-manager-webhook"
+    namespace = kubernetes_namespace.cert_manager.metadata[0].name
+  }
+
+  rule {
+    api_groups = [""]
+    resources  = ["secrets"]
+    verbs      = ["create", "get", "patch", "update"]
+  }
+}
+
+# Webhook RoleBinding
+resource "kubernetes_role_binding" "cert_manager_webhook" {
+  metadata {
+    name      = "cert-manager-webhook"
+    namespace = kubernetes_namespace.cert_manager.metadata[0].name
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "Role"
+    name      = kubernetes_role.cert_manager_webhook.metadata[0].name
+  }
+
+  subject {
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account.cert_manager_webhook.metadata[0].name
+    namespace = kubernetes_namespace.cert_manager.metadata[0].name
+  }
+}
