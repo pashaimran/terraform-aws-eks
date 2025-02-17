@@ -18,6 +18,10 @@ deployment:
 service:
   enabled: true
   type: LoadBalancer
+  externalTrafficPolicy: Local
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
 
 rbac:
   enabled: true
