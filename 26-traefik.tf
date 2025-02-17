@@ -47,6 +47,39 @@ resource "kubernetes_service_account" "traefik" {
   }
 }
 
+resource "kubernetes_role" "traefik_ingressroute_role" {
+  metadata {
+    name      = "traefik-ingressroute-access"
+    namespace = "demo-project"
+  }
+
+  rule {
+    api_groups = ["traefik.containo.us"]
+    resources  = ["ingressroutes"]
+    verbs      = ["get", "list", "create", "update", "delete"]
+  }
+}
+
+resource "kubernetes_role_binding" "traefik_ingressroute_binding" {
+  metadata {
+    name      = "traefik-ingressroute-access-binding"
+    namespace = "demo-project"
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "Role"
+    name      = kubernetes_role.traefik_ingressroute_role.metadata[0].name
+  }
+
+  subject {
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account.traefik.metadata[0].name
+    namespace = kubernetes_namespace.traefik.metadata[0].name
+  }
+}
+
+
 resource "kubernetes_cluster_role" "traefik" {
   metadata {
     name = "traefik-cluster-role"
