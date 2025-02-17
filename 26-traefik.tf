@@ -29,6 +29,13 @@ rbac:
 ingressRoute:
   dashboard:
     enabled: true
+    matchRule: PathPrefix(`/dashboard`)
+
+ingressClass:
+  enabled: true
+  isDefaultClass: true
+
+
 EOF
   ]
 }
