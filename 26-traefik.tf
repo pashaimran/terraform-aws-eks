@@ -5,11 +5,16 @@ resource "kubernetes_namespace" "traefik" {
 }
 
 resource "helm_release" "traefik" {
-  name       = "traefik"
-  repository = "https://traefik.github.io/charts"
-  chart      = "traefik"
-  namespace  = kubernetes_namespace.traefik.metadata[0].name
-
+  name             = "traefik"
+  repository       = "https://helm.traefik.io/traefik"
+  chart            = "traefik"
+  namespace        = "traefik"
+  create_namespace = true
+  version          = "23.0.1"
+  set {
+    name  = "dashboard.enabled"
+    value = "true"
+  }
   values = [
     <<EOF
 deployment:
@@ -26,10 +31,10 @@ service:
 rbac:
   enabled: true
 
-ingressRoute:
-  dashboard:
-    enabled: true
-    matchRule: PathPrefix(`/dashboard`)
+# ingressRoute:
+#   dashboard:
+#     enabled: true
+#     matchRule: PathPrefix(`/dashboard`)
 
 ingressClass:
   enabled: true
