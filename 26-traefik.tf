@@ -20,57 +20,57 @@ resource "kubernetes_namespace" "traefik" {
   }
 }
 
-# Create service account for Traefik
-resource "kubernetes_service_account" "traefik" {
-  metadata {
-    name      = "traefik"
-    namespace = kubernetes_namespace.traefik.metadata[0].name
-  }
-}
+# # Create service account for Traefik
+# resource "kubernetes_service_account" "traefik" {
+#   metadata {
+#     name      = "traefik"
+#     namespace = kubernetes_namespace.traefik.metadata[0].name
+#   }
+# }
 
-# Create cluster role for Traefik
-resource "kubernetes_cluster_role" "traefik" {
-  metadata {
-    name = "traefik"
-  }
+# # Create cluster role for Traefik
+# resource "kubernetes_cluster_role" "traefik" {
+#   metadata {
+#     name = "traefik"
+#   }
 
-  rule {
-    api_groups = [""]
-    resources  = ["services", "endpoints", "secrets"]
-    verbs      = ["get", "list", "watch"]
-  }
+#   rule {
+#     api_groups = [""]
+#     resources  = ["services", "endpoints", "secrets"]
+#     verbs      = ["get", "list", "watch"]
+#   }
 
-  rule {
-    api_groups = ["extensions", "networking.k8s.io"]
-    resources  = ["ingresses", "ingressclasses"]
-    verbs      = ["get", "list", "watch"]
-  }
+#   rule {
+#     api_groups = ["extensions", "networking.k8s.io"]
+#     resources  = ["ingresses", "ingressclasses"]
+#     verbs      = ["get", "list", "watch"]
+#   }
 
-  rule {
-    api_groups = ["extensions", "networking.k8s.io"]
-    resources  = ["ingresses/status"]
-    verbs      = ["update"]
-  }
-}
+#   rule {
+#     api_groups = ["extensions", "networking.k8s.io"]
+#     resources  = ["ingresses/status"]
+#     verbs      = ["update"]
+#   }
+# }
 
-# Create cluster role binding
-resource "kubernetes_cluster_role_binding" "traefik" {
-  metadata {
-    name = "traefik"
-  }
+# # Create cluster role binding
+# resource "kubernetes_cluster_role_binding" "traefik" {
+#   metadata {
+#     name = "traefik"
+#   }
 
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = kubernetes_cluster_role.traefik.metadata[0].name
-  }
+#   role_ref {
+#     api_group = "rbac.authorization.k8s.io"
+#     kind      = "ClusterRole"
+#     name      = kubernetes_cluster_role.traefik.metadata[0].name
+#   }
 
-  subject {
-    kind      = "ServiceAccount"
-    name      = kubernetes_service_account.traefik.metadata[0].name
-    namespace = kubernetes_namespace.traefik.metadata[0].name
-  }
-}
+#   subject {
+#     kind      = "ServiceAccount"
+#     name      = kubernetes_service_account.traefik.metadata[0].name
+#     namespace = kubernetes_namespace.traefik.metadata[0].name
+#   }
+# }
 
 
 # Helm release for Traefik
@@ -100,7 +100,7 @@ resource "helm_release" "traefik" {
       isDefaultClass: true
 
     serviceAccount:
-      create: false
+      create: true
 
     rbac:
       enabled: true
