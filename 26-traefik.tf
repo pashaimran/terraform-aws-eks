@@ -20,13 +20,13 @@ resource "kubernetes_namespace" "traefik" {
   }
 }
 
-# # Create service account for Traefik
-# resource "kubernetes_service_account" "traefik" {
-#   metadata {
-#     name      = "traefik"
-#     namespace = kubernetes_namespace.traefik.metadata[0].name
-#   }
-# }
+# Create service account for Traefik
+resource "kubernetes_service_account" "traefik" {
+  metadata {
+    name      = "traefik"
+    namespace = kubernetes_namespace.traefik.metadata[0].name
+  }
+}
 
 # Create cluster role for Traefik
 resource "kubernetes_cluster_role" "traefik" {
@@ -100,7 +100,7 @@ resource "helm_release" "traefik" {
       isDefaultClass: true
 
     serviceAccount:
-      create: true
+      create: false
 
     rbac:
       enabled: true
