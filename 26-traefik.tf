@@ -1,17 +1,32 @@
-# Create namespace for Traefik
+
+# Create namespace for Traefik with Helm labels
 resource "kubernetes_namespace" "traefik" {
   metadata {
     name = "traefik"
+    labels = {
+      "app.kubernetes.io/managed-by" = "Helm"
+    }
+    annotations = {
+      "meta.helm.sh/release-name"      = "traefik"
+      "meta.helm.sh/release-namespace" = "traefik"
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      metadata[0].labels,
+      metadata[0].annotations,
+    ]
   }
 }
 
-# Create service account for Traefik
-resource "kubernetes_service_account" "traefik" {
-  metadata {
-    name      = "traefik"
-    namespace = kubernetes_namespace.traefik.metadata[0].name
-  }
-}
+# # Create service account for Traefik
+# resource "kubernetes_service_account" "traefik" {
+#   metadata {
+#     name      = "traefik"
+#     namespace = kubernetes_namespace.traefik.metadata[0].name
+#   }
+# }
 
 # Create cluster role for Traefik
 resource "kubernetes_cluster_role" "traefik" {
@@ -64,7 +79,12 @@ resource "helm_release" "traefik" {
   repository = "https://helm.traefik.io/traefik"
   chart      = "traefik"
   namespace  = kubernetes_namespace.traefik.metadata[0].name
-  version    = "24.0.0"  # Update to latest version as needed
+  version    = "24.0.0"
+  
+  # Force recreation if exists
+  replace    = true
+  force_update = true
+  cleanup_on_fail = true
 
   values = [
     <<-EOT
@@ -80,10 +100,10 @@ resource "helm_release" "traefik" {
       isDefaultClass: true
 
     serviceAccount:
-      create: true  # Let Helm create the ServiceAccount
+      create: true
 
     rbac:
-      enabled: true  # Let Helm create the RBAC resources
+      enabled: true
 
     service:
       enabled: true
