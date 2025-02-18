@@ -17,30 +17,33 @@ resource "helm_release" "traefik" {
   # }
   values = [
     <<EOF
-deployment:
-  enabled: true
+# deployment:
+#   enabled: true
 
-service:
-  enabled: true
-  type: LoadBalancer
-  externalTrafficPolicy: Local
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
-    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+# service:
+#   enabled: true
+#   type: LoadBalancer
+#   externalTrafficPolicy: Local
+#   annotations:
+#     service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+#     service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
 
-rbac:
-  enabled: true
+# rbac:
+#   enabled: true
 
-# ingressRoute:
-#   dashboard:
-#     enabled: true
-#     matchRule: PathPrefix(`/dashboard`)
+# # ingressRoute:
+# #   dashboard:
+# #     enabled: true
+# #     matchRule: PathPrefix(`/dashboard`)
 
 ingressClass:
   enabled: true
-  isDefaultClass: true
+#   isDefaultClass: true
 
-
+ports:
+  web:
+    redirectTo:
+      port: websecure
 EOF
   ]
 }
