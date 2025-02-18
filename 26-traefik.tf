@@ -5,7 +5,7 @@ resource "helm_release" "traefik" {
   chart      = "traefik"
   namespace  = "traefik"
   create_namespace = true  # Let Helm manage namespace creation
-  version    = "23.2.1" 
+  version    = "23.0.1" 
 
   # Force recreation if exists
   replace        = true
