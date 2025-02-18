@@ -42,6 +42,9 @@ resource "kubernetes_cluster_role" "traefik_role" {
     ]
     verbs = ["get", "list", "watch"]
   }
+    depends_on = [
+    helm_release.traefik
+  ]
 }
 
 # Create cluster role binding
@@ -66,6 +69,9 @@ resource "kubernetes_cluster_role_binding" "traefik_role_binding" {
     name      = "traefik"  # This should match the service account name created by Helm
     namespace = "traefik"   # This should match your Traefik namespace
   }
+    depends_on = [
+    helm_release.traefik
+  ]
 }
 
 # Create additional role for Traefik CRD management
@@ -84,6 +90,9 @@ resource "kubernetes_cluster_role" "traefik_crd_role" {
     resources  = ["customresourcedefinitions"]
     verbs      = ["get", "list", "watch"]
   }
+    depends_on = [
+    helm_release.traefik
+  ]
 }
 
 # Create CRD role binding
@@ -108,4 +117,7 @@ resource "kubernetes_cluster_role_binding" "traefik_crd_role_binding" {
     name      = "traefik"
     namespace = "traefik"
   }
+    depends_on = [
+    helm_release.traefik
+  ]
 }

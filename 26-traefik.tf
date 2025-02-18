@@ -1,36 +1,15 @@
-
-# Create namespace for Traefik with Helm labels
-resource "kubernetes_namespace" "traefik" {
-  metadata {
-    name = "traefik"
-    labels = {
-      "app.kubernetes.io/managed-by" = "Helm"
-    }
-    annotations = {
-      "meta.helm.sh/release-name"      = "traefik"
-      "meta.helm.sh/release-namespace" = "traefik"
-    }
-  }
-
-  lifecycle {
-    ignore_changes = [
-      metadata[0].labels,
-      metadata[0].annotations,
-    ]
-  }
-}
-
 # Helm release for Traefik
 resource "helm_release" "traefik" {
   name       = "traefik"
   repository = "https://helm.traefik.io/traefik"
   chart      = "traefik"
-  namespace  = kubernetes_namespace.traefik.metadata[0].name
+  namespace  = "traefik"
+  create_namespace = true  # Let Helm manage namespace creation
   version    = "24.0.0"
-  
+
   # Force recreation if exists
-  replace    = true
-  force_update = true
+  replace        = true
+  force_update   = true
   cleanup_on_fail = true
 
   values = [
@@ -56,7 +35,7 @@ resource "helm_release" "traefik" {
       enabled: true
       type: LoadBalancer
       annotations:
-        service.beta.kubernetes.io/aws-load-balancer-type: nlb
+        service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
         service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
         service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
 
@@ -74,11 +53,13 @@ resource "helm_release" "traefik" {
 
     additionalArguments:
       - "--api.dashboard=true"
-      - "--providers.kubernetesingress.ingressclass=traefik"
+      - "--api.insecure=true"
+      - "--providers.kubernetescrd"
       - "--log.level=INFO"
 
     dashboard:
       enabled: true
+      insecure: true  # Allows access without authentication
 
     resources:
       requests:
@@ -100,9 +81,5 @@ resource "helm_release" "traefik" {
     podSecurityContext:
       fsGroup: 65532
     EOT
-  ]
-
-  depends_on = [
-    kubernetes_namespace.traefik
   ]
 }
