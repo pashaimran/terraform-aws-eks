@@ -57,6 +57,7 @@ resource "kubernetes_cluster_role_binding" "traefik" {
   }
 }
 
+
 # Helm release for Traefik
 resource "helm_release" "traefik" {
   name       = "traefik"
@@ -77,6 +78,12 @@ resource "helm_release" "traefik" {
     ingressClass:
       enabled: true
       isDefaultClass: true
+
+    serviceAccount:
+      create: true  # Let Helm create the ServiceAccount
+
+    rbac:
+      enabled: true  # Let Helm create the RBAC resources
 
     service:
       enabled: true
@@ -128,9 +135,6 @@ resource "helm_release" "traefik" {
   ]
 
   depends_on = [
-    kubernetes_namespace.traefik,
-    kubernetes_service_account.traefik,
-    kubernetes_cluster_role.traefik,
-    kubernetes_cluster_role_binding.traefik
+    kubernetes_namespace.traefik
   ]
 }
