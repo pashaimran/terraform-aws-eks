@@ -7,12 +7,13 @@ authScripts:
   scripts:
     auth.sh: |
       #!/bin/sh
-      aws ecr --region ap-south-1 get-authorization-token --output text --query 'authorizationData[].authorizationToken' | base64 -d
+      TOKEN=$(aws ecr --region ap-south-1 get-authorization-token --output text --query 'authorizationData[].authorizationToken' | base64 -d)
+      echo "AWS:${TOKEN}"
 
 config:
   registries:
   - name: ECR
-    api_url: https://264278751395.dkr.ecr.ap-south-1.amazonaws.com/
+    api_url: https://api.ecr.ap-south-1.amazonaws.com
     prefix: 264278751395.dkr.ecr.ap-south-1.amazonaws.com
     ping: yes
     insecure: no
