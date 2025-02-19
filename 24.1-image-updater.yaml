@@ -7,8 +7,10 @@ authScripts:
   scripts:
     auth.sh: |
       #!/bin/sh
-      TOKEN=$(aws ecr --region ap-south-1 get-authorization-token --output text --query 'authorizationData[].authorizationToken' | base64 -d)
-      echo "AWS:${TOKEN}"
+      # Get the token and split it into username and password
+      AUTH=$(aws ecr --region ap-south-1 get-authorization-token --output text --query 'authorizationData[].authorizationToken' | base64 -d)
+      # Print in the required format
+      echo "${AUTH}" | awk '{split($0,a,":"); print "AWS:"a[2]}'
 
 config:
   registries:
