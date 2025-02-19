@@ -15,7 +15,7 @@ authScripts:
 config:
   registries:
   - name: ECR
-    api_url: https://api.ecr.ap-south-1.amazonaws.com
+    api_url: https://264278751395.dkr.ecr.ap-south-1.amazonaws.com
     prefix: 264278751395.dkr.ecr.ap-south-1.amazonaws.com
     ping: yes
     insecure: no
